@@ -1,0 +1,34 @@
+<?php
+
+$projectDirectory = __DIR__;
+
+$docblock = <<<DOCBLOCK
+/*
+ * This file is part of Dune Framework.
+ *
+ * (c) Abhishek B <phpdune@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+DOCBLOCK;
+
+$phpFiles = new RecursiveIteratorIterator(
+    new RecursiveDirectoryIterator($projectDirectory, RecursiveDirectoryIterator::SKIP_DOTS),
+    RecursiveIteratorIterator::LEAVES_ONLY
+);
+
+foreach ($phpFiles as $phpFile) {
+    if ($phpFile->getExtension() === 'php') {
+        $filePath = $phpFile->getPathname();
+        $fileContents = file_get_contents($filePath);
+        if (strpos($fileContents, $docblock) === false) {
+
+            $newContents = str_replace('<?php', "<?php\n\n" . $docblock, $fileContents);
+
+            file_put_contents($filePath, $newContents);
+        }
+    }
+}
+
+echo 'script executed successfully';
